@@ -1,10 +1,16 @@
 package br.gov.sp.fatec.springbootapp.entity;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity // Indica que é uma classe de entidade (tabela)
@@ -21,6 +27,13 @@ public class Usuario {
     
     @Column(name = "usr_senha")
     private String senha;
+
+    @ManyToMany(fetch = FetchType.EAGER) // EAGER me fará um join e preencherá nessa lista todas as aut. ligadas a esse user
+    @JoinTable(name = "uau_usuario_autorizacao", // Nome da tabela de ligação
+        joinColumns = { @JoinColumn(name = "usr_id") }, // Coluna que referencia o user
+        inverseJoinColumns = { @JoinColumn(name = "aut_id") } // Coluna que referencia o outro lado
+    )
+    private Set<Autorizacao> autorizacoes; // Set pois não posso repetir 2x o usuário com a mesma autorizacao
     
     public Long getId(){
         return this.id;
@@ -41,5 +54,12 @@ public class Usuario {
     }
     public void setSenha(String senha){
         this.senha = senha;
+    }
+
+    public Set<Autorizacao> getAutorizacoes(){
+        return this.autorizacoes;
+    }
+    public void setAutorizacoes(Set<Autorizacao> autorizacoes){
+        this.autorizacoes = autorizacoes;
     }
 }
