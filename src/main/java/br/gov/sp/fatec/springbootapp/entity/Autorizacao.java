@@ -1,10 +1,14 @@
 package br.gov.sp.fatec.springbootapp.entity;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity // Indica que é uma classe de entidade (tabela)
@@ -18,6 +22,9 @@ public class Autorizacao {
     
     @Column(name = "aut_nome")
     private String nome;    // varchar == String
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "autorizacoes") // Nunca ponha EAGER dos 2 lados, para não gerar loop e erros
+    private Set<Usuario> usuarios;
     
     public Long getId(){
         return this.id;
@@ -31,5 +38,12 @@ public class Autorizacao {
     }
     public void setNome(String nome){
         this.nome = nome;
+    }
+
+    public Set<Usuario> getUsuarios(){
+        return this.usuarios;
+    }
+    public void setUsuarios(Set<Usuario> usuarios){
+        this.usuarios = usuarios;
     }
 }
