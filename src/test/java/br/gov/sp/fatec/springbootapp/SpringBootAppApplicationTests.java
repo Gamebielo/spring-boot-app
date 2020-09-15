@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,6 +64,30 @@ class SpringBootAppApplicationTests {
     void testaUsuario(){
         Autorizacao aut = autRepo.findById(1L).get(); // Pegando o primeiro registro
         assertEquals("Gabriel", aut.getUsuarios().iterator().next().getNome()); // Comparando com "Gabriel"
+    }
+
+    @Test 
+    void testaBuscaUsuarioNomeContains(){
+        List<Usuario> usuarios = usuarioRepo.findByNomeContainsIgnoreCase("BrI"); // Retornando todos os users que contem "bri" no nome
+        assertFalse(usuarios.isEmpty()); // Tem que ser false se ele encontrar alguém
+    }
+    
+    @Test 
+    void testaBuscaUsuarioNome(){
+        Usuario usuario = usuarioRepo.findByNome("Gabriel"); // Retornando o user exato que contém o nome
+        assertNotNull(usuario);
+    }
+
+    @Test 
+    void testaBuscaUsuarioNomeSenha(){
+        Usuario usuario = usuarioRepo.findByNomeAndSenha("Gabriel", "123"); // Retornando o user exato que contém o nome e a senha
+        assertNotNull(usuario);
+    }
+
+    @Test 
+    void testaBuscaUsuarioNomeAutorizacao(){
+        List<Usuario> usuarios = usuarioRepo.findByAutorizacoesNome("ROLE_ADMIN"); // Retornando o user exato que contém o nome e a senha
+        assertFalse(usuarios.isEmpty()); // Retorna false se encontrar alguém
     }
 
 }
