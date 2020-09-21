@@ -8,4 +8,6 @@ import br.gov.sp.fatec.springbootapp.entity.Autorizacao;
 public interface AutorizacaoRepository extends JpaRepository<Autorizacao, Long> {
     // Spring gera para mim a implementação disso automaticamente
     // JPARepository tem todas as funcionalidades necessárias, buscar, salvar, dar update...
+
+    public Autorizacao findByNome(String autorizacao);
 }

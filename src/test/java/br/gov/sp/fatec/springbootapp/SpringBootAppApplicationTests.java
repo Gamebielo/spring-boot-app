@@ -15,17 +15,22 @@ import br.gov.sp.fatec.springbootapp.entity.Autorizacao;
 import br.gov.sp.fatec.springbootapp.entity.Usuario;
 import br.gov.sp.fatec.springbootapp.repository.AutorizacaoRepository;
 import br.gov.sp.fatec.springbootapp.repository.UsuarioRepository;
+import br.gov.sp.fatec.springbootapp.service.SegurancaService;
 
 @SpringBootTest
-@Transactional  // Abre uma transação (cada método dessa classe abre uma transação nova e uma conexao com o banco)
-@Rollback       // Ao final da transaçao, não comita e sim dá rollback (usar em Testes apenas...)
+// Transactional -> Abre uma transação (cada método dessa classe abre uma transação nova e uma conexao com o banco), se algo der erro não salva nada no banco
+@Transactional
+@Rollback  // Ao final da transaçao, não comita e sim dá rollback (usar em Testes apenas...)
 class SpringBootAppApplicationTests {
 
-    @Autowired
+    @Autowired // Instancia a classe
     private UsuarioRepository usuarioRepo;
 
     @Autowired
     private AutorizacaoRepository autRepo;
+
+    @Autowired
+    private SegurancaService segService;
 
 	@Test
 	void contextLoads() {
@@ -79,8 +84,20 @@ class SpringBootAppApplicationTests {
     }
 
     @Test 
+    void testaBuscaUsuarioNomeQuery(){
+        Usuario usuario = usuarioRepo.buscaUsuarioPorNome("Gabriel");
+        assertNotNull(usuario);
+    }
+
+    @Test 
     void testaBuscaUsuarioNomeSenha(){
         Usuario usuario = usuarioRepo.findByNomeAndSenha("Gabriel", "123"); // Retornando o user exato que contém o nome e a senha
+        assertNotNull(usuario);
+    }
+
+    @Test 
+    void testaBuscaUsuarioNomeSenhaQuery(){
+        Usuario usuario = usuarioRepo.buscaUsuarioPorNomeESenha("Gabriel", "123");
         assertNotNull(usuario);
     }
 
@@ -90,4 +107,15 @@ class SpringBootAppApplicationTests {
         assertFalse(usuarios.isEmpty()); // Retorna false se encontrar alguém
     }
 
+    @Test 
+    void testaBuscaUsuarioNomeAutorizacaoQuery(){
+        List<Usuario> usuarios = usuarioRepo.findByAutorizacoesNome("ROLE_ADMIN");
+        assertFalse(usuarios.isEmpty()); // Retorna false se encontrar alguém
+    }
+
+    @Test
+    void testaServicoCriaUsuario(){
+        Usuario usuario = segService.criarUsuario("normal", "senha123", "ROLE_USUARIO");
+        assertNotNull(usuario);
+    }
 }
