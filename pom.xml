@@ -38,7 +38,13 @@
 					<artifactId>junit-vintage-engine</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+        </dependency>
+        
+        <!-- Dependencia que me permite trabalhar com XML no spring (padrão é JSON) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
 		
 		<dependency>
 			<groupId>mysql</groupId>

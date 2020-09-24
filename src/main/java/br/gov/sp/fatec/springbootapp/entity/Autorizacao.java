@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity // Indica que é uma classe de entidade (tabela)
 @Table(name = "aut_autorizacao")
 public class Autorizacao {
@@ -24,6 +26,7 @@ public class Autorizacao {
     private String nome;    // varchar == String
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "autorizacoes") // Nunca ponha EAGER dos 2 lados, para não gerar loop e erros
+    @JsonIgnore // Parar o loop no get dos usuários
     private Set<Usuario> usuarios;
     
     public Long getId(){
