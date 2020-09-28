@@ -62,4 +62,13 @@ public class SegurancaServiceImpl implements SegurancaService {
         }
         throw new RuntimeException("Usuário não encontrado!");
     }
+
+    @Override
+    public Autorizacao buscarAutorizacaoPorNome(String nome) {
+        Autorizacao autorizacao = autRepo.findByNome(nome);
+        if (autorizacao != null){
+            return autorizacao;
+        }
+        throw new RuntimeException("Autorizacao não encontrada!"); // Não retornar null para não causar nullPoint
+    }
 }

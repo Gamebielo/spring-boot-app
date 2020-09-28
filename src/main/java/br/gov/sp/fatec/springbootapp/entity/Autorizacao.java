@@ -11,22 +11,26 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import br.gov.sp.fatec.springbootapp.controller.View;
 
 @Entity // Indica que é uma classe de entidade (tabela)
 @Table(name = "aut_autorizacao")
 public class Autorizacao {
 
+    @JsonView(View.UsuarioCompleto.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "aut_id")
     private Long id;        // bigint == Long
     
+    @JsonView({View.UsuarioResumo.class, View.UsuarioCompleto.class, View.AutorizacaoResumo.class})
     @Column(name = "aut_nome")
     private String nome;    // varchar == String
 
+    @JsonView(View.AutorizacaoResumo.class)
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "autorizacoes") // Nunca ponha EAGER dos 2 lados, para não gerar loop e erros
-    @JsonIgnore // Parar o loop no get dos usuários
     private Set<Usuario> usuarios;
     
     public Long getId(){
