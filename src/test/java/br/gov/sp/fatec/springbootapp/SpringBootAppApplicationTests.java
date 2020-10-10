@@ -1,5 +1,6 @@
 package br.gov.sp.fatec.springbootapp;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,7 +9,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.jdbc.core.JdbcTemplate;
+//import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.gov.sp.fatec.springbootapp.entity.Autorizacao;
@@ -18,9 +20,8 @@ import br.gov.sp.fatec.springbootapp.repository.UsuarioRepository;
 import br.gov.sp.fatec.springbootapp.service.SegurancaService;
 
 @SpringBootTest
-// Transactional -> Abre uma transação (cada método dessa classe abre uma transação nova e uma conexao com o banco), se algo der erro não salva nada no banco
-@Transactional
-@Rollback  // Ao final da transaçao, não comita e sim dá rollback (usar em Testes apenas...)
+@Transactional // Transactional -> Abre uma transação (cada método dessa classe abre uma transação nova e uma conexao com o banco), se algo der erro não salva nada no banco
+//@Rollback  // Ao final da transaçao, não comita e sim dá rollback (usar em Testes apenas...)
 class SpringBootAppApplicationTests {
 
     @Autowired // Instancia a classe
@@ -31,6 +32,20 @@ class SpringBootAppApplicationTests {
 
     @Autowired
     private SegurancaService segService;
+
+    // Executando querys, iniciando registros no banco antes de executar os demais testes
+    @BeforeAll // Executa antes de todos os testes restantes
+    static void init(@Autowired JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.update(
+          "insert into usr_usuario (usr_nome, usr_senha) values(?, ?)",
+          "Gabriel", "123");
+        jdbcTemplate.update(
+          "insert into aut_autorizacao (aut_nome) values(?)",
+          "ROLE_ADMIN");
+        jdbcTemplate.update(
+          "insert into uau_usuario_autorizacao (usr_id, aut_id) values(?, ?)",
+          1L, 1L);
+    }
 
 	@Test
 	void contextLoads() {
