@@ -48,6 +48,7 @@ public class UsuarioController {
         return segurancaService.buscarUsuarioPorNome(nome);
     }
 
+    @JsonView(View.UsuarioResumo.class)
     @PostMapping // ResponseEntyti para formatar as respostas do HTTP
     public ResponseEntity<Usuario> cadastrarNovoUsuario(@RequestBody Usuario usuario,
             UriComponentsBuilder uriComponentsBuilder) { // Pega os dados da requisiçao
