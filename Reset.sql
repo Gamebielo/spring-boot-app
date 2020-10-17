@@ -1,3 +1,6 @@
+drop user 'user'@'localhost';
+drop schema anotacao;
+
 /*Crio o banco*/
 create schema anotacao;
 /*Entro nele*/
