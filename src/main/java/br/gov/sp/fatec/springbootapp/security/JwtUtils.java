@@ -8,8 +8,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,7 +25,8 @@ public class JwtUtils {
         Login usuarioSemSenha = new Login();
         usuarioSemSenha.setUsername(usuario.getName());
         if (!usuario.getAuthorities().isEmpty()) {
-            usuarioSemSenha.setAutorizacao(usuario.getAuthorities().iterator().next().getAuthority()); // Pega a 1º e salva
+            usuarioSemSenha.setAutorizacao(usuario.getAuthorities().iterator().next().getAuthority()); // Pega a 1º e
+                                                                                                       // salva
         }
 
         String usuarioJson = mapper.writeValueAsString(usuarioSemSenha); // Gerar um JSON
@@ -34,12 +37,14 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, KEY).compact();
     }
 
-    public static User parseToken(String token) throws JsonParseException, JsonMappingException, IOException {
+    public static Authentication parseToken(String token) throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         String credentialsJson = Jwts.parser().setSigningKey(KEY).parseClaimsJws(token).getBody().get("userDetails",
                 String.class);
         Login usuario = mapper.readValue(credentialsJson, Login.class);
-        return (User) User.builder().username(usuario.getUsername()).password("secret")
+        UserDetails userDetails = (User) User.builder().username(usuario.getUsername()).password("secret")
                 .authorities(usuario.getAutorizacao()).build();
+        return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(),
+                userDetails.getAuthorities());
     }
 }

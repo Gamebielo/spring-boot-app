@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity // Segurança e pre configurações
 @EnableGlobalMethodSecurity(prePostEnabled = true) // Habilitar segurança por anotação
@@ -22,7 +23,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().httpBasic().and()
+        http.csrf().disable().
+                    addFilterBefore(new JwtAuthenticationFilter(),
+                                    UsernamePasswordAuthenticationFilter.class) // Rodando o filtro JWT antes do filtro do spring
                 // this disables session creation on Spring Security (para cada página, gera um
                 // token e confirma o acesso...)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -31,7 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // Configurando como o spring faz a autenticação (LOGIN)
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // Toda vez que receber um usuario e senha, use esse serviço para buscar o usuário...
+        // Toda vez que receber um usuario e senha, use esse serviço para buscar o
+        // usuário...
         auth.userDetailsService(userDetailsService);
     }
 
@@ -42,7 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder(); // Indica que irei utilizar este padrão de encoder...
     }
 
-    @Bean // O método já existe, mas uso o Bean para deixar ele exposto, disponível pra uso
+    @Bean // O método já existe, mas uso o Bean para deixar ele exposto, disponível pra
+          // uso
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
